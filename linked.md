@@ -283,7 +283,7 @@ toArray() {
     const array = [];
     let currentNode = this.head;
     
-    while (currentNode.next !== null) {
+    while (currentNode !== null) {
       array.push(currentNode.data);
       currentNode = currentNode.next
     }
