@@ -104,8 +104,9 @@ class LinkedList {
       if(lodash.isEqual(currentNode.next.data, valueToRemove)) { // we found it!
         nodeToRemove = currentNode.next;
 
-        const newNeighbor = current.next.next; // store the new neighbor
-        currentNode.next = newNeighbor;
+        const newNeighbor = currentNode.next.next; // store the new neighbor
+
+        currentNode.next = newNeighbor; // remove reference to nodeToRemove
 
         if (currentNode.next === null) { // we just removed the tail
           this.tail = currentNode;
@@ -113,9 +114,9 @@ class LinkedList {
           return nodeToRemove;
         }
 
-        newNeighbor.previous = current; // remove last reference to nodeToRemove
-        this.length--
-        return nodeToRemove
+        newNeighbor.previous = currentNode; // remove last reference to nodeToRemove
+        this.length--;
+        return nodeToRemove;
       }
       currentNode = currentNode.next;
     }

@@ -211,7 +211,7 @@ Here is the full code:
 
 ## Remove Method
 
-This method will remove a specified node based on the parameter passed. Remember that we remove nodes by breaking all reference/pointers to that node.
+This method will remove a specified node based on the parameter passed. Remember that we remove nodes by breaking all reference/links to that node.
 
 We'll add some extra functionality by returning the node that was removed, much like the `.slice()` array method returns the removed items.
 
@@ -401,73 +401,110 @@ if(lodash.isEqual(currentNode.next.data, valueToRemove)) {
   * We do this since we have to remove it's connection to the node we want to remove
   * We can also use that to update the nodeToRemove variable
 * Since we still have access to the currentNode, we can chain the `.next` properties to find the node *after* the node we want to remove
-* 
 
+### Remove Links to the node to remove
 
+Now that we have have to break the links to the node we want to remove. Again, this is done by interacting with it's surrounding nodes
 
+```js
+currentNode.next = newNeighbor;
+
+newNeighbor.previous = currentNode; // remove last reference to nodeToRemove
+this.length--;
+return nodeToRemove;
+```
+
+![Empty list](./cards/remove_find_04.png)
+
+### If we removed the tail (singly lists)
+
+Since we wrote this as a doubly list, we were already able to manage removing the tail. Though here is the code anyway of how we can manage this if this was a singly linked list.
+
+Since we updated the currentNode's `next` property to link to the new neighbor, we know that we just removed the tail if `next` is now null.
+
+```js
+if (currentNode.next === null) { // we just removed the tail
+  this.tail = currentNode;
+  this.length--;
+  return nodeToRemove;
+}
+```
+
+![Empty list](./cards/remove_find_05.png)
+
+And that's it 😅! Now we just need to return from the method if we never found a match for the data.
+
+`return nodeToRemove // no item was found;`
+
+Here is the full method
 
 ```js
 remove(valueToRemove) {
-    if (!this.head) return null; // list is empty
+  if (!this.head) return null; // list is empty
 
-    let nodeToRemove = null;
+  let nodeToRemove = null;
 
-    if(lodash.isEqual(this.head.data, valueToRemove)) { // remove and update the head
-      nodeToRemove = this.head;
-      this.head = this.head.next; // update head to be second item in the list
-      if (this.head === null) { // there was no second, the head was the only item in the list
-        this.tail = null;
-      } else {
-        this.head.previous = null;
+  if(lodash.isEqual(this.head.data, valueToRemove)) { // remove and update the head
+    nodeToRemove = this.head.data;
+    const newHead = this.head;
+    this.head = newHead; // update head to be second item in the list
+    // this.head = this.head.next;
+    if (this.head === null) { // there was no second, the head was the only item in the list
+      this.tail = null;
+    } else {
+      this.head.previous = null;
+    }
+    this.length--;
+    return nodeToRemove;
+  }
+
+  if(lodash.isEqual(this.tail.data, valueToRemove)) { // we have to remove the last item in the list and update tail
+    nodeToRemove = this.tail.data;
+    const newTail = this.tail;
+    this.tail = newTail; // update tail to be second to last item in the list
+    // this.tail = this.tail.next;
+    if(this.tail === null) { // we just removed the only node
+      this.head = null;
+    } else {
+      this.tail.next = null;
+    }
+    this.length--;
+    return nodeToRemove
+  }
+
+
+  let currentNode = this.head; // use this var to start at the beginning
+
+  while(currentNode.next !== null) { // the only node that will have .next be null is the last item
+
+    if(lodash.isEqual(currentNode.next.data, valueToRemove)) { // we found it!
+      nodeToRemove = currentNode.next;
+
+      const newNeighbor = currentNode.next.next; // store the new neighbor
+
+      currentNode.next = newNeighbor; // remove reference to nodeToRemove
+
+      if (currentNode.next === null) { // we just removed the tail
+        this.tail = currentNode;
+        this.length--;
+        return nodeToRemove;
       }
+
+      newNeighbor.previous = currentNode; // remove last reference to nodeToRemove
       this.length--;
       return nodeToRemove;
     }
-
-    if(lodash.isEqual(this.tail.data, valueToRemove)) { // we have to remove the last item in the list and update tail
-      nodeToRemove = this.tail;
-      this.tail = this.tail.previous;
-      if(this.tail === null) { // we just removed the only node
-        this.head = null;
-      } else {
-        this.tail.next = null;
-      }
-      this.length--;
-      return nodeToRemove
-    }
-
-
-    let currentNode = this.head; // use this var to start at the beginning
-
-    while(currentNode.next !== null) { // the only node that will have .next be null is the last item
-
-      if(lodash.isEqual(currentNode.next.data, valueToRemove)) { // we found it!
-        nodeToRemove = currentNode.next;
-
-        const newNeighbor = current.next.next; // store the new neighbor
-        currentNode.next = newNeighbor;
-
-        if (currentNode.next === null) { // we just removed the tail
-          this.tail = currentNode;
-          this.length--;
-          return nodeToRemove;
-        }
-
-        newNeighbor.previous = current; // remove last reference to nodeToRemove
-        this.length--
-        return nodeToRemove
-      }
-      currentNode = currentNode.next;
-    }
-
-    return nodeToRemove // no item was found;
+    currentNode = currentNode.next;
   }
+
+  return nodeToRemove // no item was found;
+}
 ```
 
 ## toArray Method
 
 We need to convert our data into a usable structure in our code. We can loop through the entire linked list to do so.
-We start at the head and simply keep using the .next property to move through the list. The last node in the list, the tail, will always have a null value in it's .next property. That is how we'll know we hit the end of the list 
+We start at the head and simply keep using the .next property to move through the list. The last node in the list, the tail, will always have a null value in it's .next property. That is how we'll know we hit the end of the list
 
 ```js
 toArray() {
@@ -483,4 +520,4 @@ toArray() {
   }
 ```
 
-![Empty list](./cards/toArray_01.png)
+![Empty list](./cards/remove_find_01.png)
