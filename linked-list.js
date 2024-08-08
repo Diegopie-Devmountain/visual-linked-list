@@ -44,7 +44,9 @@ class LinkedList {
       this.tail = newNode;
     } else {
       const newSecondLastNode = this.tail;
+      // Point new node to old tail
       newNode.previous = newSecondLastNode;
+      // point old tail to new node
       newSecondLastNode.next = newNode;
       this.tail = newNode;
     }
@@ -67,8 +69,10 @@ class LinkedList {
     console.log(obj1 === obj3); // false
 
     if(lodash.isEqual(this.head.data, valueToRemove)) { // remove and update the head
-      nodeToRemove = this.head;
-      this.head = this.head.next; // update head to be second item in the list
+      nodeToRemove = this.head.data;
+      const newHead = this.head;
+      this.head = newHead; // update head to be second item in the list
+      // this.head = this.head.next;
       if (this.head === null) { // there was no second, the head was the only item in the list
         this.tail = null;
       } else {
@@ -79,8 +83,10 @@ class LinkedList {
     }
 
     if(lodash.isEqual(this.tail.data, valueToRemove)) { // we have to remove the last item in the list and update tail
-      nodeToRemove = this.tail;
-      this.tail = this.tail.previous;
+      nodeToRemove = this.tail.data;
+      const newTail = this.tail;
+      this.tail = newTail; // update tail to be second to last item in the list
+      // this.tail = this.tail.next;
       if(this.tail === null) { // we just removed the only node
         this.head = null;
       } else {
