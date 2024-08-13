@@ -70,7 +70,7 @@ class LinkedList {
 
     if(lodash.isEqual(this.head.data, valueToRemove)) { // remove and update the head
       nodeToRemove = this.head.data;
-      const newHead = this.head;
+      const newHead = this.head.next;
       this.head = newHead; // update head to be second item in the list
       // this.head = this.head.next;
       if (this.head === null) { // there was no second, the head was the only item in the list
